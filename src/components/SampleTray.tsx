@@ -7,7 +7,6 @@ const SampleTray = (): JSX.Element => {
   const [closed, setClosed] = useState(false);
   const sampleTrayClass = classNames("sample-tray-container", {
     "sample-tray-hidden": closed,
-    // "display": setClosed,
   });
 
   return (
