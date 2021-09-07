@@ -2,6 +2,8 @@ import React, { useState, useEffect, FC } from "react";
 import classNames from "classnames";
 import "./SampleTray.scss";
 import { Pane } from "evergreen-ui";
+// import {useStoreState} from @hooks;
+
 
 const SampleTray = (): JSX.Element => {
   const [closed, setClosed] = useState(false);
