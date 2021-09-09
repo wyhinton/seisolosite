@@ -1,0 +1,5 @@
+@import "../../../css/flex.scss";
+
+.tag-bar-container {
+    @include flexCenter(flex-start)
+}

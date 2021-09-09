@@ -11,10 +11,9 @@
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    // "declaration": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "strict": true,
+    "strict": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
@@ -22,10 +21,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
-    
+    "jsx": "react",
+    "downlevelIteration": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "custom_typings/"
+    ]
   },
   "include": [
-    "src"
+    "src",
+    "custom_typings"
   ]
 }

@@ -18,7 +18,6 @@
 .env.test.local
 .env.production.local
 
-musicradar-drum-samples.zip*
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

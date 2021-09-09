@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+      "baseUrl": "./src",
+      "paths": {
+        "@hooks": ["./hooks.tsx"],
+        "@enums": ["./enums.ts"],
+        "@classes/*": ["./classes/*"],
+        "@components/*": ["./components/*"],
+        "@static/*": ["./static/*"],
+        "@lib/*": ["./lib/*"],
+        "@css/*": ["./css/*"],
+        "@interfaces/*": ["./interfaces/*"],
+        "@my-react-select": [
+          "../node_modules/react-select",
+          "../node_modules/@types/react-select"
+        ],
+        "@my-react-select/*": [
+          "../node_modules/react-select/*",
+          "../node_modules/@types/react-select"
+        ]
+      }
+    }
+  }

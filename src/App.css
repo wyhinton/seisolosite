@@ -36,3 +36,10 @@
     transform: rotate(360deg);
   }
 }
+
+#draggable{
+  position: absolute;
+  pointer-events: none;
+  height: 100%;
+  width: 100%;
+}
