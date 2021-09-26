@@ -1,0 +1,20 @@
+
+.sample-tray-container {
+  height: 40vh !important;
+  // background-color: red;
+  position: absolute;
+  bottom: 0;
+  width: 100vw; 
+  // border-top: 5px solid yellow;
+  transition: bottom .2s ease-in;
+
+}
+
+.sample-tray-hidden{
+    bottom: -36vh;
+    transition: bottom .2s ease-in;
+}
+
+.sample-tray-innter-container{
+  flex-direction: column;
+}
