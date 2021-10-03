@@ -26,7 +26,24 @@
     -->
     <title>React App</title>
   </head>
+
   <body>
+    <style>
+      body {
+        max-height: 100vh;
+        overflow: hidden
+      }
+      @font-face {
+        font-family: 'Nippo-Regular';
+        src: local('Nippo-Regular'),url(./Nippo-Regular.otf) format('opentype');
+      }
+      html * {
+        font-size: 16px !important;
+        line-height: 1.625 !important;
+        color: #2020131 !important;
+        font-family: Nunito, sans-serif !important;
+      }
+    </style>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="draggable"></div>
     <div id="root"></div>

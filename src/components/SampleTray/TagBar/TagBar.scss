@@ -1,5 +1,8 @@
 @import "../../../css/flex.scss";
 
-.tag-bar-container {
-    @include flexCenter(flex-start)
+.tag-bar-container{
+    @include flexCenter(flex-start);
+    background-color: grey;
+    // padding: .5em;
+    // height: fit-content
 }

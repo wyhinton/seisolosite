@@ -1,37 +1,35 @@
+import '@css/App.css';
+
+import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import React, {useEffect, useState} from 'react';
-import logo from './logo.svg';
-import './App.css';
-import SampleTray from "./components/SampleTray/SampleTray";
-import { DropResult, DragDropContext } from "react-beautiful-dnd";
-import { DragSource } from '@enums';
 import {useStoreActions, useStoreState} from "@hooks";
 
-import {useKeyboardShortcut} from "crooks";
+import { DragSource } from '@enums';
 import Editor from '@components/Editor/Editor';
+import SampleTray from "./components/SampleTray/SampleTray";
 import { actions } from 'react-table';
+import {useKeyboardShortcut} from "crooks";
 
 const App = (): JSX.Element =>{
   const fetchCardDataGoogleSheetThunk = useStoreActions(
     (actions) => actions.googleSheetsModel.fetchAppGoogleSheet
   );
-  const processSamples = useStoreActions((actions)=>actions.samplesModel.processSamples)
   const processCompositions = useStoreActions((actions)=>actions.compositionsModel.processCompositions)
   const fetchCompositionSheet = useStoreActions((actions)=>actions.googleSheetsModel.fetchCompositionsSheet)
+  const fetchSamples = useStoreActions((actions)=>actions.googleSheetsModel.fetchSamplesSheet)
 
   useEffect(() => {
-    processSamples();
     fetchCardDataGoogleSheetThunk();
     processCompositions();
     fetchCompositionSheet();
+    fetchSamples();
   }, [fetchCardDataGoogleSheetThunk]);
+
   return (
     <DragDropContext
     onBeforeDragStart={(e) => {
       console.log(e);
       const { source } = e;
-      // if (source.droppableId === DragSource.SAMPLE_TRAY) {
-      //   console.log("dragged form samle tray");
-      // }
     }}
     onDragEnd={onDragEnd}
   >

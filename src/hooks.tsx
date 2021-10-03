@@ -1,7 +1,7 @@
 import { createTypedHooks } from "easy-peasy";
 import { StoreModel } from "./model";
 import React, {useState} from 'react';
-
+import { useArray } from "react-hanger";
 
 const typedHooks = createTypedHooks<StoreModel>();
 
@@ -19,5 +19,6 @@ export function useToggle(initialValue: boolean): [boolean, () => void] {
     const toggleValue = () => setValue(!value);
   
     return [value, toggleValue];
-  }
+}
 
+export {useArray}

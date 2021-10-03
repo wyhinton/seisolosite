@@ -1,0 +1,11 @@
+.body{
+    max-height: 100vh;
+    overflow: hidden;
+}
+/* @font-face {
+    font-family: 'Nippo-Regular';
+    src: local('Nippo-Regular'),url(./Nippo-Regular.otf) format('opentype');
+}
+html *{
+    font-family: Nippo-Regular,
+} */

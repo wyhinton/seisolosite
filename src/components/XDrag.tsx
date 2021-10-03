@@ -1,7 +1,9 @@
-import React, { FC, ReactNode } from "react";
 import { Draggable, DraggableProps } from "react-beautiful-dnd";
-import ReactTable from "react-table";
+import React, { FC, ReactNode } from "react";
+
 import { DropCategory } from "@enums";
+import ReactDOM from "react-dom";
+import ReactTable from "react-table";
 
 interface IXDrag extends Omit<DraggableProps, "children"> {
   dndType: DropCategory;
@@ -27,9 +29,30 @@ const XDrag: FC<IXDrag> = ({
   if (!React.isValidElement(children)) return <div />;
   // const child = React.memo(children, []);
   return (
-    <Draggable {...properties}>
+    <Draggable {...properties} disableInteractiveElementBlocking = {true} shouldRespectForcePress ={true}>
+    {/* <Draggable {...properties} disableInteractiveElementBlocking = {true} shouldRespectForcePress ={true}> */}
       {(provided, snapshot) => {
         const dragHandleProperties = dragAll ? provided.dragHandleProps : {};
+        if (snapshot.isDragging) {
+          return ReactDOM.createPortal(          <>
+            <div
+              className={className}
+              ref={provided.innerRef}
+              {...provided.draggableProps}
+              {...dragHandleProperties}
+            >
+              {React.cloneElement(children, { provided })}
+            </div>
+            <div
+              style={{
+                display: snapshot.isDragging ? "block" : "none",
+                backgroundColor: snapshot.isDragging ? "green" : "none",
+              }}
+            >
+              {React.cloneElement(children, { provided })}
+            </div>
+          </>, document.body);
+        }
         return (
           <>
             <div
@@ -42,7 +65,7 @@ const XDrag: FC<IXDrag> = ({
             </div>
             <div
               style={{
-                display: snapshot.isDragging ? "table-row" : "none",
+                display: snapshot.isDragging ? "block" : "none",
                 backgroundColor: snapshot.isDragging ? "green" : "none",
               }}
             >

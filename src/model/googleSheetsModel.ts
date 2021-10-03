@@ -5,9 +5,11 @@ import type RawLayoutRow from "../interfaces/RawLayoutRow";
 import cardDataSheetKey from "@static/cardDataSheetKey";
 import layoutsGoogleSheetKey from "@static/layoutsGoogleSheetKey";
 import GoogleSheetData from "@classes/📋GoogleSheetData";
-import Papa from "papaparse";
+import Papa, { ParseConfig } from "papaparse";
 import { RawCompositionRow } from "@interfaces/RawCompositionRow";
 import { ParagraphProps } from "evergreen-ui";
+import RawSampleRow from "@interfaces/RawSampleRow";
+import analyzeClips from '@static/analyzeClips';
 
 type Result =
   | { success: true; value: unknown }
@@ -18,18 +20,21 @@ export interface GoogleSheetsModel {
   compositionsSheet: GoogleSheetData | undefined;
   appGoogleSheet: GoogleSheetData | undefined;
   cardDataGoogleSheet: RawCardRow[] | null;
+  samplesSheet: RawSampleRow[];
   // cardDataGoogleSheet: GoogleSheet<RawCardRow> | null;
   layoutDataGoogleSheet: GoogleSheet<RawLayoutRow> | null;
 
   //requests
   fetchAppGoogleSheet: Thunk<GoogleSheetsModel>;
   fetchCompositionsSheet: Thunk<GoogleSheetsModel>;
+  fetchSamplesSheet: Thunk<GoogleSheetsModel>;
   // fetchLayoutDataGoogleSheet: Thunk<GoogleSheetsModel>;
 
   //setters
   setAppGoogleSheetData: Action<GoogleSheetsModel, GoogleSheetData>;
   setCardDataGoogleSheet: Action<GoogleSheetsModel, RawCardRow[]>;
   setCompositionsSheet: Action<GoogleSheetsModel, Papa.ParseResult<unknown>>;
+  setSamplesSheet: Action<GoogleSheetsModel, unknown[]>;
   // setCardDataGoogleSheet: Action<GoogleSheetsModel, GoogleSheet<RawCardRow>>;
   setLayoutDataGoogleSheet: Action<
     GoogleSheetsModel,
@@ -46,23 +51,28 @@ const googleSheetsModel: GoogleSheetsModel = {
   layoutDataGoogleSheet: null,
   cardDataGoogleSheet: null,
   appGoogleSheet: undefined,
+  samplesSheet: [],
   compositionsSheet: undefined,
+
+  //request
   fetchCompositionsSheet: thunk(async (actions) => {
     console.log("FETCHING COMPOSITIONS SHEET");
-    const url = process.env.PUBLIC_URL+"/TEST_ANALYSIS.csv";
-    Papa.parse(url, {
-        download: true,
-        header: true,
-        complete: function(results) {
-          actions.setCompositionsSheet(results)
-        }
-    });
-    
+    const url  = publicSheetUrl("/TEST_ANALYSIS.csv")
+    parseSheet(url, (r)=>{actions.setCompositionsSheet(r)})
   }),
-  //requests
-  /**Handle a request to the google sheet containing the cards
-   * listeners: appModel.onCardSheetLoadSuccess
-   */
+  fetchSamplesSheet: thunk(async (actions) => {
+    console.log("Fetching Samples");
+    if (analyzeClips){
+      console.log("USING UNPROCESSED SAMPLE SHEET");
+      const url  = publicSheetUrl("/out_csv.csv")
+      parseSheet(url, (r)=>{actions.setSamplesSheet(r.data)})
+    }
+    else {
+      console.log("USING PREPROCESSED SAMPLE SHEET");
+      const url  = publicSheetUrl("/CLIPS_4.csv")
+      parseSheet(url, (r)=>{actions.setSamplesSheet(r.data)})
+    }
+  }),
   fetchAppGoogleSheet: thunk(async (actions) => {
     GoogleSheetData.prototype
       .loadSheets(
@@ -81,19 +91,10 @@ const googleSheetsModel: GoogleSheetsModel = {
         });
       });
   }),
+  //Simple Setters
   setAppGoogleSheetData: action((state, googleSheet) => {
     state.appGoogleSheet = googleSheet;
   }),
-  /**Handle a request to the google sheet containing the layouts
-   * listeners: layoutsModel.onLayoutSheetLoadSuccess
-   */
-  // fetchLayoutDataGoogleSheet: thunk(async (actions) => {
-  //   // getSheet<RawLayoutRow>(layoutsGoogleSheetKey).then((sheet) => {
-  //   //   console.log(sheet);
-  //   //   actions.setLayoutDataGoogleSheet(sheet);
-  //   // });
-  // }),
-  //setters
   setCardDataGoogleSheet: action((state, sheet) => {
     state.cardDataGoogleSheet = sheet;
   }),
@@ -103,13 +104,38 @@ const googleSheetsModel: GoogleSheetsModel = {
   setCompositionsSheet: action((state, compositionSheet) => {
     compositionSheet.data = compositionSheet.data as RawCompositionRow[]
   }),
+  setSamplesSheet: action((state, samplesSheet) => {
+    state.samplesSheet = samplesSheet as RawSampleRow[]
+  }),
 };
 
 export default googleSheetsModel;
 
 
-// function isRawCompositionRowArray(value: unknown): value is RawCompositionRow[] {
-//   return (
-//     Array.isArray(value) && value.every(element => typeof element = RawCompositionRow)
-//   );
-// }
+
+// console.log(url);
+// Papa.parse(url, {
+//     download: true,
+//     header: true,
+//     complete: function(results) {
+//       console.log(results);
+//       actions.setSamplesSheet(results.data)
+//     }
+// });
+
+const parseSheet = (url: string, complete: (results: Papa.ParseResult<unknown>)=>void) => {
+  Papa.parse(url, {
+    download: true,
+    header: true,
+    complete: function(results) {
+      console.log(results);
+      complete(results)
+    }})
+};
+
+const publicSheetUrl = (file: string) =>{
+  if (!file.endsWith(".csv")){
+    console.error("Failed to load csv, wrong extension (not .csv)")
+  }
+  return process.env.PUBLIC_URL+file;
+}

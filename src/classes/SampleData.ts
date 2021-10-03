@@ -1,26 +1,44 @@
-import { CompositionTitle } from "./🎻CompositionData";
+import RawSampleRow from "@interfaces/RawSampleRow";
 
 class SampleData {
-    id!: string;
-    src!: string;
-    tags!: string[]; 
-    path!: string;
-    composition: CompositionTitle;
-    startTime: Date;
-    endTime: Date;
+  id!: string;
+  src!: string;
+  tags!: string[];
+  svgPath!: string;
+  filename!: string;
+  length!: number;
+  composition: string;
+  startTime: Date;
+  endTime: Date;
+  
 
-    constructor(id: string, src: string, tags: string[], startTime: Date, endTime: Date, composition: CompositionTitle) {
-        this.id = id
-        this.src = src
-        this.tags = tags
-        this.path = ""
-        this.startTime = startTime
-        this.endTime = endTime
-        this.composition =  composition
-    }
-    
-    setPath = (path: string): void =>{
-        this.path = path
-    }
+  constructor(sampleDataRow: RawSampleRow) {
+    const {
+      filename,
+      tags,
+      composition,
+      starTime: start,
+      endTime: end,
+      hour,
+      svgPath,
+      length, 
+    } = sampleDataRow;
+    const url = `${process.env.PUBLIC_URL}/Clips/` + filename;
+    const defaultStartTime = new Date("1995-12-17T03:24:00");
+    const defaultEndTime = new Date("1995-12-17T03:24:01");
+    this.src = url;
+    this.tags = tags.split(",");
+    this.startTime = defaultStartTime;
+    this.endTime = defaultEndTime;
+    this.composition = composition;
+    this.filename = filename;
+    this.svgPath = svgPath;
+    this.length = length; 
+  }
+
+  setPath = (path: string): void => {
+    this.svgPath = path;
+  };
 }
 export default SampleData;
+

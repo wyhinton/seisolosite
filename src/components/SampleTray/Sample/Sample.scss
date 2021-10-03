@@ -1,7 +1,8 @@
 .sample-container{
-    height: 4em;
-    width: 9em;
+    height: 100%;
+    width: 100%;
     // background-color: blue;
     display: flex;
-    flex-direction: column;
+    // flex-direction: column;
+    justify-content: center;
 }

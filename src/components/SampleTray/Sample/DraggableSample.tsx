@@ -1,20 +1,21 @@
-import React, { useState, useEffect} from "react";
+import { DragSource, DropCategory } from '@enums';
+import React, { useEffect, useState } from "react";
 import {useStoreActions, useStoreState} from "@hooks";
-import classNames from "classnames";
+
+import IXDrop from "@components/IXDrop";
 import {Pane} from "evergreen-ui";
 import Sample from "./Sample";
-import IXDrop from "@components/IXDrop";
-import XDrag from "@components/XDrag";
-import { DropCategory, DragSource } from '@enums';
 import SampleData from "@classes/SampleData";
+import XDrag from "@components/XDrag";
+import classNames from "classnames";
 
 const DraggableSample = ({sampleData, droppableId, draggableId, index}: {sampleData: SampleData, droppableId: string, draggableId: string, index: number}): JSX.Element =>{
   return(
     <XDrag index= {index} draggableId = {draggableId} dndType= {DropCategory.SampleTraySample}>
-      <Sample data = {sampleData} label= {draggableId}/>
+      <Sample sampleData = {sampleData} label= {draggableId}/>
     </XDrag>
   )
 }
 
-export default DraggableSample
+export default React.memo(DraggableSample)
 

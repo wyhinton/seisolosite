@@ -7,23 +7,20 @@ import Section from "@components/UI/Section";
 import "./Editor.scss";
 import WidgetGrid from "./WidgetGrid";
 import TrackContainer from "./TrackContainer";
+import Knob from "./Knob";
 
 const Editor = (): JSX.Element =>{
   const WidgetGridSectionRef= useRef<HTMLDivElement|undefined>();
-  
+  const trackWidth = 1500;
+  const [trackHeight, setTrackHeight] = useState(200)
   useEffect(() => {
-   const divElement= WidgetGridSectionRef.current;
-   console.log(divElement);
   }, []);
 
   return(
 
       <Section height= {"100vh"} className="editor-container">
-        <TrackContainer>
-        <Section backgroundColor= {"darkgrey"} className = {"widget-grid-container"}>
-            <WidgetGrid/>
-          <div>hello</div>
-        </Section>
+        <TrackContainer height = {trackHeight}>
+            <WidgetGrid height = {trackHeight} width = {trackWidth}/>
         </TrackContainer>
       </Section>
  

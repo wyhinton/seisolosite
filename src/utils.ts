@@ -18,6 +18,19 @@ export function randomElements(arr: any[], count: number) {
     return tmp;
 }
 
-export function mapRange(value: number, in_min: number, in_max: number, out_min: number, out_max: number): number {
-  return (value - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+export function mapRange(value: number, inMin: number, inMax: number, outMin: number, outMax: number): number {
+  return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
+
+export function downloadBlob(content: any, filename: string, contentType: string): void{
+  // Create a blob
+  const blob = new Blob([content], { type: contentType });
+  const url = URL.createObjectURL(blob);
+
+  // Create a link to download it
+  const pom = document.createElement('a');
+  pom.href = url;
+  pom.setAttribute('download', filename);
+  pom.click();
+}
+

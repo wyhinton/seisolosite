@@ -1,6 +1,6 @@
 import React, { useState, useEffect} from "react";
 import {Pane} from "evergreen-ui";
-import "./Section.scss";
+import "@css/Section.scss";
 
 interface SectionProperties{
   children: JSX.Element | JSX.Element[];
@@ -8,19 +8,21 @@ interface SectionProperties{
   backgroundColor?: string
   column?: boolean; 
   padding?: string;
-  width?: string;
-  height?: string;
+  width?: string | number;
+  height?: string | number;
+  backgroundBlur?: boolean;
 }
 // const Component = React.forwardRef<RefType, PropsType>((props, ref) => {
 // eslint-disable-next-line react/display-name
-const Section = React.forwardRef<HTMLDivElement, SectionProperties>(({children, className, backgroundColor, column, padding, width, height}, ref) => {
+const Section = React.forwardRef<HTMLDivElement, SectionProperties>(({children, className, backgroundColor, column, padding, width, height, backgroundBlur}, ref) => {
   const flexStatus = column?"flex-column ":"flex-row "
   const style = {
-    backgroundColor: "white"??backgroundColor,
+    backgroundColor: backgroundColor??"rgba(0,0,0,0)",
     padding: padding,
     borderRadius: "1em",
     width: width??"100%", 
     height: height??"100%",
+    backdropFilter: backgroundBlur?"blur(10px)":"",
   }
   return(
     <div className = {"ui-section " + flexStatus + className??""}style = {style} ref = {ref}>

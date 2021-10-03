@@ -1,82 +1,204 @@
-import React, { useState, useEffect} from "react";
-import {useStoreActions, useStoreState} from "@hooks";
-import classNames from "classnames";
-// import "/node_modules/react-grid-layout/css/styles.css";
-// import "/node_modules/react-resizable/css/styles.css"
-import "@css/react-grid-layout.css"
-import "@css/react-resizable.css"
+import "@css/react-grid-layout.css";
+import "@css/react-resizable.css";
+import "@css/SampleLayout.scss";
+import "./react-stonecutter/"
 
+import React, { useEffect, useState } from "react";
 import {
-    layout,
-    makeResponsive,
-    measureItems,
-    SpringGrid
-  } from "react-stonecutter";
-import Sample from "../Sample/Sample";
+  SpringGrid,
+  layout,
+  makeResponsive,
+  measureItems,
+} from "./react-stonecutter";
+import { useArray, useStoreActions, useStoreState } from "@hooks";
+
+import {Direction} from 'react-beautiful-dnd';
 import DraggableSample from "../Sample/DraggableSample";
-import IXDrop from "@components/IXDrop";
 import { DropCategory } from "@enums";
+import Grid from './Grid';
+import IXDrop from "@components/IXDrop";
+import Sample from "../Sample/Sample";
 import SampleData from "@classes/SampleData";
+import {cubicOut} from './easings';
+import { mapRange } from "@utils";
+import { sample } from "lodash";
+import { string } from "prop-types";
 import tags from "@static/tags";
 
-
-const Grid = makeResponsive(measureItems(SpringGrid, { measureImages: true }), {
-defaultColumns: 3,
-maxWidth: 1920
-});
 const springGridOptions = { stiffness: 170, damping: 26 };
 
-interface SampleLayoutProperties{
-  activeTags: string[]
+interface SampleLayoutProperties {
+  activeTags: string[];
 }
+const gridProps = {};
+const SampleLayout = ({ activeTags }: SampleLayoutProperties): JSX.Element => {
+  const samples = useStoreState((state) => state.samplesModel.samples);
+  const [activeSamples, setActiveSamples] = useState(samples);
+  
+  const widths = [1, 2, 3]; // this is width ratio
 
-const SampleLayout = ({activeTags}:SampleLayoutProperties): JSX.Element =>{
-  const testArray = Array.from(Array(45).keys())
-  // const dummySamples = Array.from(Array(45).keys()).map(f=>new SampleData([rand(tags)]))
-  const noFilter = (c: SampleData) => {return true};
-  const [availableSamples, setAvailableSamples] = useState<SampleData[]>([])
-  const samples = useStoreState(state=>state.samplesModel.samples)
+  const enterExitStyles = ['Simple', 'Skew', 'Newspaper',
+    'Fold Up', 'From Center', 'From Left to Right', 'From Top', 'From Bottom'];
+  const gutters = 5;
+  const columnWidth = 15;
 
-  function rand(items: any[]) {
-    // "~~" for a closest "int"
-    return items[~~(items.length * Math.random())];
+  const itemHeight = 100;
+  const gridProps = {
+    // data: data,
+    useCSS: false,
+    responsive: true,
+    layout: "horizontal",
+    enterExitStyle: "simple",
+    duration: 400,
+    stiffness: 60,
+    damping: 14,
+    columns: 20,
+    gutters: gutters,
+    easing: cubicOut,
+    columnWidth: columnWidth,
   }
-  const [filterFunction, setFilterFunction] = useState<(c: SampleData) =>boolean>(()=>(c: SampleData) => true)
-  useEffect(()=>{
+
+  const droppableProps = {
+    isDropDisable: true,
+    dropCategory: DropCategory.SampleTraySample,
+    droppableId: "Sample Tray",
+    // isCombineEnabled: false,
+    direction: "horizontal" as Direction,
+    isCombineOnly: true, 
+    disabled: true, 
+    
+  }
+  
+  useEffect(() => {
+    console.log("using effect in samplelayout after tag change");
     console.log(activeTags);
-    const func = (c: SampleData) =>
-    {
-      if (c.tags){
-        for (const s of c.tags) {
-          if (activeTags.includes(s)){
-            return true
-          }
+    if (activeTags.length > 0){
+      const func = (c: SampleData) => {
+        hasActiveTags(activeTags, c)
+      };
+      // const active = samples.filter((s)=>func(s))
+      const active = samples.filter((sample)=>{
+        if (sample.tags) {
+          console.log(activeTags);
+          // console.log(sample.tags);
+          // for (const s of sample.tags) {
+            if (activeTags.every(t=>sample.tags.includes(t))){
+              return true
+            }
+            // if (activeTags.includes(s)) {
+            //   return true;
+            // }
+          // }
         }
+        return false;
       }
-      return false
+      )
+      console.log(active);
+      setActiveSamples(active)
+      console.log(activeSamples);
+    } else {
+      setActiveSamples(samples)
     }
-    setFilterFunction(func)
-  },[activeTags]);
-  return(
-    <IXDrop isDropDisabled= {true} dropCategory = {DropCategory.SampleTraySample} droppableId= {"Sample Dray"} >
-    <Grid
-    columns = {3}
-    columnWidth={400}
-    gutterWidth={1}
-    gutterHeight={7}
-    layout={layout.pinterest}
-    springConfig={springGridOptions}
+  }, [activeTags]);
+
+  useEffect(()=>{
+    setActiveSamples(samples);
+  },[samples]);
+
+
+
+
+  return (
+    <IXDrop
+    {...droppableProps}
     >
-      
-     { 
-     samples.filter(sampleData=>()=>filterFunction(sampleData)).map((sD, index)=>(
-        <div key = {sD.id}>
-          <DraggableSample key = {sD.id} sampleData = {sD} index = {index} droppableId = {index+"_drop"} draggableId = {index+"_drag"}/>
-        </div>
-      ))}
-    </Grid>
+      <Grid
+      {...gridProps}
+      itemHeight={itemHeight}
+      measured={true}
+      >
+        {activeSamples
+          .map(function(sD, index){
+
+            // const widthRatio = 2;
+            // const widthRatio = getSampleWidth(sD)
+            const widthRatio = getSampleWidth2(sD)
+            // console.log();
+            return (
+              <li
+              className="grid-item"
+              key={index}
+              //allow for custom prop on li
+              //@ts-ignore
+              dataRatio={widthRatio}
+              style={{
+                width: widthRatio * columnWidth +  gutters * (widthRatio - 1),
+                height: itemHeight,
+                // backgroundColor: "blue"
+              }}
+            >
+              <div key={sD.id} className={"layout-grid-item"}>
+                <DraggableSample
+                  key={sD.id}
+                  sampleData={sD}
+                  index={index}
+                  droppableId={index + "_drop"}
+                  draggableId={index + "_drag"}
+                />
+              </div>
+              </li>
+            )
+          })}
+      </Grid>
     </IXDrop>
-  )
+  );
+};
+
+export default SampleLayout;
+
+
+const hasActiveTags = (tags: string[], sample: SampleData): boolean =>{
+  if (sample.tags) {
+    for (const s of sample.tags) {
+      if (tags.includes(s)) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
-export default SampleLayout
+
+const getSampleWidth = (sample: SampleData): number =>{
+  const {length} = sample
+  if (length > 2.5) {
+    return 3
+  }
+  // if (length > 2) {
+  //   return 2
+  // }
+  if (length > 1.0) {
+    return 2
+  }
+  if (length > .5) {
+    return 1
+  }
+  if (length > .25) {
+    return 1
+  }
+  return 1  
+}
+const getSampleWidth2 = (sample: SampleData): number =>{
+  const mapped = mapRange(sample.length, 0, 4.0, 5,9)
+  const rounded = Math.round(mapped)
+  // console.log(rounded);
+  // console.log(mapped);
+  return rounded
+  // return 1
+}
+
+interface MyInterface{ 
+  prop1: string; 
+  prop2: string;
+  prop3: string
+}

@@ -1,9 +1,13 @@
-import React, { FC, ReactNode, useEffect } from "react";
-import { Droppable, DroppableProps } from "react-beautiful-dnd";
-import { AddIcon } from "evergreen-ui";
 import "../css/droppable.scss";
-// import Pulsar from "./Shared/Pulsar";
+
+import { Droppable, DroppableProps } from "react-beautiful-dnd";
+import React, { FC, ReactNode, useEffect } from "react";
+
+import { AddIcon } from "evergreen-ui";
 import { DropCategory } from "@enums";
+
+// import Pulsar from "./Shared/Pulsar";
+
 interface IXDrop extends Omit<DroppableProps, "children"> {
   children: ReactNode;
   dropCategory: DropCategory;
@@ -19,7 +23,10 @@ const IXDrop: FC<IXDrop> = ({
 }) => {
   // const droppableContainert className = {"droppable " + className}
   return (
-    <Droppable {...properties} type={"DEFAULT"}>
+    // <Droppable {...properties} type={"some"}>
+    // <Droppable isDropDisabled={true} droppableId = "sample tray">
+    <Droppable isDropDisabled={false} droppableId = "sample tray">
+    {/* <Droppable {...properties} type={"DEFAULT"}> */}
       {(provided, snapshot) => {
         return (
           <div
